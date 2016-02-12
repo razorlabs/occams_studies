@@ -36,10 +36,10 @@ def main(argv):
     psql = '/usr/pgsql-9.3/bin/psql'
 
     for db in (args.fia, args.phi):
-        dsn = '"user={oid} password={opw} dbname={db}"'.format(**locals())
-        check_call([psql, '-f', FILE_CODES, dsn], shell=True)
-        check_call([psql, '-f', FILE_VARS,  dsn], shell=True)
-        check_call([psql, '-f', FILE_LABFIX, dsn], shell=True)
+        url = str(URL('postgresql', username=oid, database=db))
+        check_call([psql, '-f', FILE_CODES, '-d', url], shell=True)
+        check_call([psql, '-f', FILE_VARS, '-d', url], shell=True)
+        check_call([psql, '-f', FILE_LABFIX, '-d', url], shell=True)
 
     # Merge the database
     check_call([sys.executable, FILE_MERGE] + argv[1:], shell=True)
