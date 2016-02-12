@@ -31,50 +31,32 @@ cli.add_argument('--target', metavar='DB', help='Merged database')
 def main(argv):
     args = cli.parse_args(argv[1:])
 
-    uid, upw = args.user.split(':')
-    oid, opw = args.owner.split(':')
+    oid, _, opw = args.owner.partition(':')
+
+    psql = '/usr/pgsql-9.3/bin/psql'
 
     for db in (args.fia, args.phi):
-        check_call(
-            '/usr/pgsql-9.3/bin/psql -f {0} "user={user} password={pw} dbname={db}"'
-            .format(FILE_CODES, user=oid, pw=opw, db=db),
-            shell=True)
-        check_call(
-            '/usr/pgsql-9.3/bin/psql -f {0} "user={user} password={pw} dbname={db}"'
-            .format(FILE_VARS, user=oid, pw=opw, db=db),
-            shell=True)
-        check_call(
-            '/usr/pgsql-9.3/bin/psql -f {0} "user={user} password={pw} dbname={db}"'
-            .format(FILE_LABFIX, user=oid, pw=opw, db=db),
-            shell=True)
+        dsn = "user={oid} password={opw} dbname={db}".format(**locals())
+        check_call([psql, '-f', FILE_CODES, dsn], shell=True)
+        check_call([psql, '-f', FILE_VARS,  dsn], shell=True)
+        check_call([psql, '-f', FILE_LABFIX, dsn], shell=True)
 
     # Merge the database
-    check_call(
-        'python {0} -U {user} \
-                    -O {owner} \
-                    --phi={phi} \
-                    --fia={fia} \
-                    --target={target}'
-        .format(FILE_MERGE, **vars(args)),
-        shell=True)
+    check_call([sys.executable, FILE_MERGE] + argv[1:], shell=True)
 
     # Upgrade the database
-    check_call('alembic -c {0} -x db="{target}" upgrade head'
-               .format(FILE_ALEMBIC, target=str(URL('postgresql',
-                                                    username=oid,
-                                                    password=opw,
-                                                    database=args.target))),
-               shell=True)
+    url = str(URL(
+        'postgresql', username=oid, password=opw, database=args.target))
+    check_call(
+        [sys.executable,
+         '-m', 'alembic.config',
+         '-c', FILE_ALEMBIC,
+         '-x', 'db=' + url,
+         'upgrade', 'head'],
+        shell=True)
 
     # Install triggers
-    check_call(
-        'python {0} -U {user} \
-                    -O {owner} \
-                    --phi={phi} \
-                    --fia={fia} \
-                    --target={target}'
-        .format(FILE_TRIGGERS, **vars(args)),
-        shell=True)
+    check_call([sys.executable, FILE_TRIGGERS] + argv[1:], shell=True)
 
 if __name__ == '__main__':
     main(sys.argv)
