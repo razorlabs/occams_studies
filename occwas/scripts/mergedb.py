@@ -74,8 +74,8 @@ cli.add_argument('--target', metavar='DB', help='Merged database')
 def main():
     args = cli.parse_args()
 
-    uid, upw = args.user.split(':')
-    oid, opw = args.owner.split(':')
+    uid, _, upw = args.user.partition(':')
+    oid, _, opw = args.owner.partition(':')
 
     phi = URL('postgresql', username=oid, password=opw, database=args.phi)
     fia = URL('postgresql', username=oid, password=opw, database=args.fia)
