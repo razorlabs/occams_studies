@@ -37,12 +37,12 @@ def main(argv):
 
     for db in (args.fia, args.phi):
         url = str(URL('postgresql', username=oid, database=db))
-        check_call([psql, '-f', FILE_CODES, '-d', url], shell=True)
-        check_call([psql, '-f', FILE_VARS, '-d', url], shell=True)
-        check_call([psql, '-f', FILE_LABFIX, '-d', url], shell=True)
+        check_call([psql, '-f', FILE_CODES, '-d', url])
+        check_call([psql, '-f', FILE_VARS, '-d', url])
+        check_call([psql, '-f', FILE_LABFIX, '-d', url])
 
     # Merge the database
-    check_call([sys.executable, FILE_MERGE] + argv[1:], shell=True)
+    check_call([sys.executable, FILE_MERGE] + argv[1:])
 
     # Upgrade the database
     url = str(URL(
@@ -52,11 +52,10 @@ def main(argv):
          '-m', 'alembic.config',
          '-c', FILE_ALEMBIC,
          '-x', 'db=' + url,
-         'upgrade', 'head'],
-        shell=True)
+         'upgrade', 'head'])
 
     # Install triggers
-    check_call([sys.executable, FILE_TRIGGERS] + argv[1:], shell=True)
+    check_call([sys.executable, FILE_TRIGGERS] + argv[1:])
 
 if __name__ == '__main__':
     main(sys.argv)
