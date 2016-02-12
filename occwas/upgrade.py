@@ -36,7 +36,7 @@ def main(argv):
     psql = '/usr/pgsql-9.3/bin/psql'
 
     for db in (args.fia, args.phi):
-        dsn = "user={oid} password={opw} dbname={db}".format(**locals())
+        dsn = '"user={oid} password={opw} dbname={db}"'.format(**locals())
         check_call([psql, '-f', FILE_CODES, dsn], shell=True)
         check_call([psql, '-f', FILE_VARS,  dsn], shell=True)
         check_call([psql, '-f', FILE_LABFIX, dsn], shell=True)
