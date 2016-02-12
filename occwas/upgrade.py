@@ -34,9 +34,8 @@ def main(argv):
     oid, _, opw = args.owner.partition(':')
 
     psql = '/usr/pgsql-9.3/bin/psql'
-
     for db in (args.fia, args.phi):
-        url = str(URL('postgresql', username=oid, database=db))
+        url = str(URL('postgresql', username=oid, password=opw, database=db))
         check_call([psql, '-f', FILE_CODES, '-d', url])
         check_call([psql, '-f', FILE_VARS, '-d', url])
         check_call([psql, '-f', FILE_LABFIX, '-d', url])
