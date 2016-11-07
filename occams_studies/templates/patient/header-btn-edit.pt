@@ -1,6 +1,0 @@
-<button class="btn btn-default"
-    data-bind="click: $root.startEditPatient"
-    tal:condition="request.has_permission('edit')">
-  <span class="fa fa-edit"></span>
-  <span i18n:translate="">Edit</span>
-</button>
