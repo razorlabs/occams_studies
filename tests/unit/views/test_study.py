@@ -97,6 +97,60 @@ class TestEditJson:
 
         assert res is not None
 
+    def test_set_termination_schema(
+            self, req, db_session, check_csrf_token, factories):
+        """
+        It should allow a form to be associate for termination
+        """
+        from occams_studies import models
+
+        schema = factories.SchemaFactory.create()
+        factories.AttributeFactory.build(
+            schema=schema,
+            name='termination_date',
+            type='date',
+        )
+        db_session.flush()
+
+        fake = factories.StudyFactory.build()
+        req.json_body = {
+            'title': fake.title,
+            'short_title': fake.short_title,
+            'code': fake.code,
+            'consent_date': str(fake.consent_date),
+            'termination_form': str(schema.id),
+        }
+
+        self._call_fut(models.StudyFactory(None), req)
+        # Fetch the study that was actually saved by the view
+        study = db_session.query(models.Study).one()
+        assert study.termination_schema.id == schema.id
+
+    def test_set_randomization_schema(
+            self, req, db_session, check_csrf_token, factories):
+        """
+        It should allow a form to be associate for randomization
+        """
+        from occams_studies import models
+
+        schema = factories.SchemaFactory.create()
+        db_session.flush()
+
+        fake = factories.StudyFactory.build()
+        req.json_body = {
+            'title': fake.title,
+            'short_title': fake.short_title,
+            'code': fake.code,
+            'consent_date': str(fake.consent_date),
+            'is_randomized': str('1'),
+            'randomization_form': str(schema.id),
+        }
+
+        self._call_fut(models.StudyFactory(None), req)
+        # Fetch the study that was actually saved by the view
+        study = db_session.query(models.Study).one()
+        assert study.randomization_schema.id == schema.id
+
 
 class TestDeleteJson:
 

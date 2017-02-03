@@ -979,7 +979,7 @@ def StudySchema(context, request):
                 check_has_termination_date])
         is_randomized = wtforms.BooleanField()
         is_blinded = wtforms.BooleanField()
-        randomzation_form = ModelField(
+        randomization_form = ModelField(
             db_session=db_session,
             class_=datastore.Schema)
 

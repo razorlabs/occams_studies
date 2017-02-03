@@ -64,7 +64,7 @@ class EntityFactory(SQLAlchemyModelFactory):
 class StudyFactory(SQLAlchemyModelFactory, FakeDescribeable):
     class Meta:
         model = studies.Study
-    short_title = factory.Faker('word')
+    short_title = factory.Faker('pystr', min_chars=1, max_chars=8)
     code = factory.Faker('credit_card_security_code')
     consent_date = factory.Faker('date_time_this_year')
 
