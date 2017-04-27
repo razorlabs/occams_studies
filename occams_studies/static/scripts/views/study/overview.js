@@ -111,6 +111,7 @@ function StudyView(studyData, scheduleUrl){
 
         // Clear error messages for next round of status updates
         self.errorMessage(null);
+        self.successMessage(null);
 
         $.ajax({
           url: window.location,

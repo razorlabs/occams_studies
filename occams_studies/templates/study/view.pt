@@ -40,14 +40,14 @@
       </header>
 
       <!-- ko if: showUploadRids -->
-        <!-- ko if: hasErrorMessages  -->
+        <!-- ko if: errorMessage  -->
           <div class="alert alert-danger" data-bind="text: errorMessage"></div>
         <!-- /ko -->
       <!-- /ko -->
 
       <!-- ko if: successMessage -->
         <div class="alert alert-success">
-          <span data-bind="text successMessage"></span>
+          <span data-bind="text: successMessage"></span>
           <button type="button" class="close" data-dismiss="alert">
             <span aria-hidden="true">&times;</span>
             <span class="sr-only">Close</span>
